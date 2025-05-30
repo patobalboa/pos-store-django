@@ -26,22 +26,39 @@ cd pos-store
 Crea un archivo llamado `Dockerfile` en la raíz del proyecto con el siguiente contenido:
 
 ```dockerfile
-FROM python:3.11-slim
+# Dockerfile
+FROM python:3.10-slim
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Instalar dependencias necesarias
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpango1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    libcairo2 \
+    && apt-get clean
 
+# Crear directorio de trabajo
 WORKDIR /app
 
-COPY requirements.txt .
+# Copiar requerimientos e instalar
+COPY deploy/txt/requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+# Copiar el resto del proyecto
 COPY . .
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Copiar el entrypoint
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Puerto expuesto
+EXPOSE 8080
+
+# EntryPoint y comando por defecto
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+
 ```
 
 ### 3. Crea y configura `entrypoint.sh`
@@ -50,9 +67,24 @@ Crea un archivo llamado `entrypoint.sh` en la raíz del proyecto:
 
 ```bash
 #!/bin/bash
-python manage.py migrate
-python manage.py collectstatic --noinput
-python manage.py runserver 0.0.0.0:8000
+#!/bin/bash
+
+# Migraciones
+echo "📦 Ejecutando makemigrations y migrate"
+python manage.py makemigrations
+python manage.py migrate 
+
+# Carga de datos iniciales
+echo "📥 Cargando datos iniciales"
+python manage.py shell --command='from core.init import *'
+# Cargar datos de ejemplo
+echo "📦 Cargando datos de ejemplo"
+python manage.py shell --command='from core.utils import *'
+
+# Arrancar servidor
+echo "🚀 Iniciando servidor Django"
+exec "$@"
+
 ```
 
 Hazlo ejecutable:
@@ -73,7 +105,10 @@ docker build -t pos-store:latest .
 docker run -it --rm -p 8000:8000 pos-store:latest
 ```
 
-Accede a la app en [http://localhost:8000](http://localhost:8000).
+Accede a la app en [http://localhost:8080](http://localhost:8080).
+> **Nota:** Si tienes problemas con el puerto, asegúrate de que no esté en uso por otro servicio.
+> **Nota:** Si ves un error de permisos, asegúrate de que tu usuario tenga acceso a Docker.
+> **Nota:** Si estás en un servidor remoto asegurate de acceder a la IP pública del servidor y el puerto 8080.
 
 ---
 
@@ -117,7 +152,7 @@ docker run -d -p 8000:8000 pos-store:latest
 ### 5. Accede a la app
 
 Abre en tu navegador:  
-`http://<IP-PUBLICA-EC2>:8000`
+`http://<IP-PUBLICA-EC2>:8080`
 
 ---
 
