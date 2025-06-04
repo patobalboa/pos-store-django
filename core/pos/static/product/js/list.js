@@ -41,7 +41,7 @@ var product = {
                     targets: [-3, -4],
                     class: 'text-center',
                     render: function (data, type, row) {
-                        return '$' + parseFloat(data).toFixed(0);
+                        return '$' + parseFloat(data).toFixed(2);
                     }
                 },
                 {

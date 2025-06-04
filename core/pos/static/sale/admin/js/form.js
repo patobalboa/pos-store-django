@@ -125,10 +125,10 @@ var sale = {
 
                 tr.find('input[name="dscto_unitary"]')
                     .TouchSpin({
-                        min: 0,
+                        min: 0.00,
                         max: 100,
-                        step: 1,
-                        decimals: 0,
+                        step: 0.01,
+                        decimals: 2,
                         boostat: 5,
                         maxboostedstep: 10,
                         postfix: "0.00"
@@ -390,10 +390,10 @@ $(function () {
 
     $('input[name="dscto"]')
         .TouchSpin({
-            min: 0,
+            min: 0.00,
             max: 100,
-            step: 1,
-            decimals: 0,
+            step: 0.01,
+            decimals: 2,
             boostat: 5,
             maxboostedstep: 10,
         })
@@ -408,10 +408,10 @@ $(function () {
 
     input_cash
         .TouchSpin({
-            min: 0,
+            min: 0.00,
             max: 100000000,
-            step: 1,
-            decimals: 0,
+            step: 0.01,
+            decimals: 2,
             boostat: 5,
             maxboostedstep: 10
         })

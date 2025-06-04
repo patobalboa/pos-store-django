@@ -74,7 +74,7 @@ class CompanyForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Ingrese un nombre de razón social'}),
-            'ruc': forms.TextInput(attrs={'placeholder': 'Ingrese un rut'}),
+            'ruc': forms.TextInput(attrs={'placeholder': 'Ingrese un ruc'}),
             'address': forms.TextInput(attrs={'placeholder': 'Ingrese una dirección'}),
             'mobile': forms.TextInput(attrs={'placeholder': 'Ingrese un teléfono celular'}),
             'phone': forms.TextInput(attrs={'placeholder': 'Ingrese un teléfono convencional'}),

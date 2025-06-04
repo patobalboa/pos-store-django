@@ -114,9 +114,9 @@
             <tr>
                 <td>{{ detail.cant }}</td>
                 <td>{{ detail.product.name }}</td>
-                <td>{{ detail.price|floatformat:0 }}</td>
-                <td>{{ detail.total_dscto|floatformat:0 }}</td>
-                <td class="text-right">{{ detail.total|floatformat:0 }}</td>
+                <td>{{ detail.price|floatformat:2 }}</td>
+                <td>{{ detail.total_dscto|floatformat:2 }}</td>
+                <td class="text-right">{{ detail.total|floatformat:2 }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -132,39 +132,39 @@
         <tbody>
         <tr>
             <td class="float-right font-weight-bold">Subtotal sin impuestos</td>
-            <td class="text-right">{{ sale.get_subtotal_without_taxes|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.get_subtotal_without_taxes|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">Descuentos</td>
-            <td class="text-right">{{ sale.total_dscto|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.total_dscto|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">Subtotal 12%</td>
-            <td class="text-right">{{ sale.subtotal_12|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.subtotal_12|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">Subtotal 0%</td>
-            <td class="text-right">{{ sale.subtotal_0|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.subtotal_0|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">IVA {{ sale.get_iva_percent }}%:</td>
-            <td class="text-right">{{ sale.total_iva|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.total_iva|floatformat:2 }}</td>
         </tr>
         <tr>
-            <td class="float-right font-weight-bold">Descuento {{ sale.dscto|floatformat:0 }}%</td>
-            <td class="text-right">{{ sale.total_dscto|floatformat:0 }}</td>
+            <td class="float-right font-weight-bold">Descuento {{ sale.dscto|floatformat:2 }}%</td>
+            <td class="text-right">{{ sale.total_dscto|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">Total</td>
-            <td class="text-right">{{ sale.total|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.total|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">Efectivo</td>
-            <td class="text-right">{{ sale.cash|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.cash|floatformat:2 }}</td>
         </tr>
         <tr>
             <td class="float-right font-weight-bold">Cambio</td>
-            <td class="text-right">{{ sale.change|floatformat:0 }}</td>
+            <td class="text-right">{{ sale.change|floatformat:2 }}</td>
         </tr>
         </tbody>
     </table>

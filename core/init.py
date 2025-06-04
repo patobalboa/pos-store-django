@@ -13,7 +13,7 @@ from core.pos.models import *
 dashboard = Dashboard()
 dashboard.name = 'INVOICE WEB'
 dashboard.icon = 'fas fa-shopping-cart'
-dashboard.author = 'Patricio Balboa Palma'
+dashboard.author = 'William Jair Dávila Vargas'
 dashboard.save()
 
 group = Group()
@@ -25,9 +25,9 @@ for permission in Permission.objects.filter().exclude(content_type__app_label__i
     group.permissions.add(permission)
 
 user = User()
-user.names = 'Patricio Balboa Palma'
+user.names = 'William Jair Dávila Vargas'
 user.username = 'admin'
-user.email = 'patricio.balboa@virginiogomez.cl'
+user.email = 'davilawilliam93@gmail.com'
 user.is_active = True
 user.is_superuser = True
 user.is_staff = True

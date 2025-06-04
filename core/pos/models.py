@@ -32,8 +32,8 @@ class Product(models.Model):
     code = models.CharField(max_length=20, unique=True, verbose_name='Código')
     description = models.CharField(max_length=500, null=True, blank=True, verbose_name='Descripción')
     category = models.ForeignKey(Category, on_delete=models.PROTECT, verbose_name='Categoría')
-    price = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Precio de Compra')
-    pvp = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Precio de Venta')
+    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Precio de Compra')
+    pvp = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Precio de Venta')
     image = models.ImageField(upload_to='product/%Y/%m/%d', null=True, blank=True, verbose_name='Imagen')
     is_service = models.BooleanField(default=False, verbose_name='¿Es un servicio?')
     with_tax = models.BooleanField(default=True, verbose_name='¿Se cobra impuesto?')
@@ -70,14 +70,14 @@ class Product(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=50, verbose_name='Razón social')
-    ruc = models.CharField(max_length=13, verbose_name='Número de RUT')
+    ruc = models.CharField(max_length=13, verbose_name='Número de RUC')
     address = models.CharField(max_length=200, verbose_name='Dirección')
     mobile = models.CharField(max_length=10, verbose_name='Teléfono celular')
     phone = models.CharField(max_length=9, verbose_name='Teléfono convencional')
     email = models.CharField(max_length=50, verbose_name='Email')
     website = models.CharField(max_length=250, verbose_name='Dirección de página web')
     description = models.CharField(max_length=500, null=True, blank=True, verbose_name='Descripción')
-    iva = models.DecimalField(default=0, decimal_places=0, max_digits=9, verbose_name='IVA')
+    iva = models.DecimalField(default=0.00, decimal_places=2, max_digits=9, verbose_name='IVA')
     image = models.ImageField(null=True, blank=True, upload_to='company/%Y/%m/%d', verbose_name='Logotipo de la empresa')
 
     def __str__(self):
@@ -142,29 +142,29 @@ class Sale(models.Model):
     employee = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Empleado')
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y hora de registro')
     date_joined = models.DateField(default=datetime.now, verbose_name='Fecha de registro')
-    subtotal_12 = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Subtotal 12%')
-    subtotal_0 = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Subtotal 0%')
-    dscto = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Descuento')
-    total_dscto = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Valor del descuento')
-    iva = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Iva')
-    total_iva = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Valor de iva')
-    total = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Total a pagar')
-    cash = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Efectivo recibido')
-    change = models.DecimalField(max_digits=9, decimal_places=0, default=0, verbose_name='Cambio')
+    subtotal_12 = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Subtotal 12%')
+    subtotal_0 = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Subtotal 0%')
+    dscto = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Descuento')
+    total_dscto = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Valor del descuento')
+    iva = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Iva')
+    total_iva = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Valor de iva')
+    total = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Total a pagar')
+    cash = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Efectivo recibido')
+    change = models.DecimalField(max_digits=9, decimal_places=2, default=0.00, verbose_name='Cambio')
 
     def __str__(self):
         return self.client.get_full_name()
 
     def get_subtotal_without_taxes(self):
-        return float(self.saledetail_set.filter().aggregate(result=Coalesce(Sum('subtotal'), 0, output_field=FloatField())).get('result'))
+        return float(self.saledetail_set.filter().aggregate(result=Coalesce(Sum('subtotal'), 0.00, output_field=FloatField())).get('result'))
 
     def get_full_subtotal(self):
         return float(self.subtotal_0) + float(self.subtotal_12)
 
     def calculate_invoice(self):
-        self.subtotal_0 = float(self.saledetail_set.filter(product__with_tax=False).aggregate(result=Coalesce(Sum('total'), 0, output_field=FloatField())).get('result'))
-        self.subtotal_12 = float(self.saledetail_set.filter(product__with_tax=True).aggregate(result=Coalesce(Sum('total'), 0, output_field=FloatField())).get('result'))
-        self.total_iva = float(self.saledetail_set.filter(product__with_tax=True).aggregate(result=Coalesce(Sum('total_iva'), 0, output_field=FloatField())).get('result'))
+        self.subtotal_0 = float(self.saledetail_set.filter(product__with_tax=False).aggregate(result=Coalesce(Sum('total'), 0.00, output_field=FloatField())).get('result'))
+        self.subtotal_12 = float(self.saledetail_set.filter(product__with_tax=True).aggregate(result=Coalesce(Sum('total'), 0.00, output_field=FloatField())).get('result'))
+        self.total_iva = float(self.saledetail_set.filter(product__with_tax=True).aggregate(result=Coalesce(Sum('total_iva'), 0.00, output_field=FloatField())).get('result'))
         self.total_dscto = float(self.get_full_subtotal()) * float(self.dscto)
         self.total = float(self.get_full_subtotal()) + float(self.total_iva) - float(self.total_dscto)
         self.save()
@@ -213,14 +213,14 @@ class SaleDetail(models.Model):
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     cant = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    price_with_vat = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    subtotal = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    iva = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    total_iva = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    dscto = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    total_dscto = models.DecimalField(max_digits=9, decimal_places=0, default=0)
-    total = models.DecimalField(max_digits=9, decimal_places=0, default=0)
+    price = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    price_with_vat = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    subtotal = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    iva = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    total_iva = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    dscto = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    total_dscto = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
+    total = models.DecimalField(max_digits=9, decimal_places=2, default=0.00)
 
     def __str__(self):
         return self.product.name

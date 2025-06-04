@@ -1,10 +1,10 @@
 $(function () {
     $('input[name="iva"]')
         .TouchSpin({
-            min: 1,
+            min: 0.00,
             max: 1000000,
-            step: 1,
-            decimals: 0,
+            step: 0.01,
+            decimals: 2,
             boostat: 5,
             maxboostedstep: 10,
             prefix: '%'

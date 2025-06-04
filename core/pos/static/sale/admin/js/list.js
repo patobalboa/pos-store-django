@@ -43,7 +43,7 @@ var sale = {
                     targets: [-2, -3, -4, -5, -6, -7],
                     class: 'text-center',
                     render: function (data, type, row) {
-                        return '$' + parseFloat(data).toFixed(0);
+                        return '$' + parseFloat(data).toFixed(2);
                     }
                 },
                 {

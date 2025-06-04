@@ -18,15 +18,15 @@ def insert_data():
     numbers = list(string.digits)
 
     company = Company()
-    company.name = 'IPVG STORE SpA'
+    company.name = 'POS-STORE S.A.'
     company.ruc = '0928363993001'
-    company.address = 'Arturo Prat 142, Los Angeles, Chile'
+    company.address = 'MILAGRO, CDLA PAQUISHA'
     company.mobile = '0996555528'
     company.phone = '2977557'
-    company.email = 'patricio.balboa@virginiogomez.cl'
-    company.website = 'https://codeplus.cl'
+    company.email = 'williamjair94@hotmail.com'
+    company.website = 'https://algorisoft.com'
     company.description = 'VENTA AL POR MAYOR Y MENOS DE PRODUCTOS DE PRIMERA NECESIDAD'
-    company.iva = 19
+    company.iva = 12.00
     company.save()
 
     with open(f'{settings.BASE_DIR}/deploy/json/products.json', encoding='utf8') as json_file:
@@ -47,10 +47,10 @@ def insert_data():
     client = Client()
     client.names = 'Consumidor Final'
     client.dni = '9999999999999'
-    client.email = 'patricio.balboa@virginiogomez.cl'
+    client.email = 'davilawilliam94@gmail.com'
     client.birthdate = date(1994, 10, 19)
     client.mobile = '9999999999'
-    client.address = 'Arturo Prat 142, Los Angeles, Chile'
+    client.address = 'Milagro, cdla. Paquisha'
     client.save()
 
     with open(f'{settings.BASE_DIR}/deploy/json/customers.json', encoding='utf8') as json_file:
@@ -72,7 +72,7 @@ def insert_data():
         sale.company_id = 1
         sale.employee_id = 1
         sale.client_id = random.choice(client_id)
-        sale.iva = 0.19
+        sale.iva = 0.12
         sale.save()
         print(f'record inserted sale {sale.id}')
         for d in range(1, 8):

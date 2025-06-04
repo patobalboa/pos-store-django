@@ -104,8 +104,8 @@ class SaleCreateView(GroupPermissionMixin, CreateView):
                     item = i.toJSON()
                     item['pvp'] = float(i.pvp)
                     item['value'] = i.get_full_name()
-                    item['dscto'] = '0'
-                    item['total_dscto'] = '0'
+                    item['dscto'] = '0.00'
+                    item['total_dscto'] = '0.00'
                     data.append(item)
             elif action == 'search_client':
                 data = []
