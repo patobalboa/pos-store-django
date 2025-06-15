@@ -22,40 +22,55 @@ Este tutorial describe cómo desplegar la aplicación Django **pos-store** en Az
     sudo waagent -deprovision+user -force
     ```
 3. **Capturar imagen:**
-    - Ir a **Azure Portal > Máquinas virtuales > [tu VM] > Capturar**
+    - Ir a **Azure Portal > Máquinas virtuales > [tu VM] > Capturar > Crear imagen**
     - Nombre de imagen: `img-pos-store`
-    - Seleccionar **Crear como Managed Image**
-
+    - Grupo de recursos: `rg-pos-store`
+    - Compartir una imagen: **No**
+4. **Esperar a que la imagen se cree** (puede tardar unos minutos)
 ---
 
-## 🧱 Crear Virtual Machine Scale Set (VMSS)
+## 🧱 Crear Virtual Machine Scale Set (VMSS) y Load Balancer
 
-1. Ir a **Virtual Machine Scale Sets > Crear**
+Para crear un VMSS que despliegue múltiples instancias de la aplicación Django con autoescalado y en alta disponibilidad, sigue estos pasos:
+
+1. Ir a **Azure Portal > Maquinas virtuales > Conjuntos de escalado de máquinas virtuales (VMSS) > Crear**
+**Virtual Machine Scale Sets > Crear**
 2. Configurar:
     - Nombre: `vmss-pos-store`
+    - Región: `eastus` (o la que prefieras)
+    - Grupo de recursos: `rg-pos-store` (o el que hayas creado)
+    - Zonas de disponibilidad: **2** (para alta disponibilidad, en mi caso `2` y `3`)
+    - Modo de orquestación: **Uniforme**
+    - Modo de escalado: **Manual**
+    - Número de instancias: **2** (puedes ajustar según tus necesidades)
+
     - Imagen: **img-pos-store** (personalizada)
-    - Tipo de instancia: **Standard B1s** o superior
-    - Zona redundante: **Habilitado**
-    - Tamaño inicial: **2 instancias**
-3. **Escalado automático:**
-    - Métrica: **CPU > 70%** escala hacia arriba
-    - **CPU < 30%** escala hacia abajo
-4. **Red:**
-    - Usar VNet existente o crear nueva
-    - Subred pública
+    - Tamaño: **Standard B2ms** (1 vCPU, 2GB RAM)
+    - Autenticación: **Clave SSH**
+        - Clave pública: (tu clave SSH)
+        - Nombre de usuario: `azureuser` (O el usuario que usaste en la VM base con la automatización de systemd)
 
----
+3. Redes:
+    - Red virtual: **Crear nueva** (o usar una existente)
+    - Subred: **Crear nueva** (o usar una existente)
+    - Opciones de equilibrio de carga:
+    - Crear un nuevo Load Balancer (Se va a abrir una ventana interactiva para configurar el Load Balancer)
+        - Nombre: `lb-pos-store`
+        - Tipo: **Público**
+        - Protocolo: **TCP**
+        - Reglas:
+            - Regla de equilibrador de carga: `check`
+            - Regla NAT de entrada: `check`
+        - Regla de equilibrio de carga:
+            - Nombre: `http`
+            - Puerto de entrada: `80`
+            - Puerto de backend: `80`
+        - Regla NAT de entrada:
+            - Inicio de intervalo de puertos de frontend: `50000`
+            - Puerto de backend: `22`
+4. Revisión y creación:
+    - Revisar la configuración y hacer clic en **Crear**
 
-## 🌐 Crear Azure Load Balancer público
-
-1. Ir a **Azure Load Balancer > Crear**
-2. Configurar:
-    - Tipo: **Público**
-    - Backend pool: asociar al VMSS `vmss-pos-store`
-    - Health probe: **TCP puerto 80**
-    - Regla de carga: **TCP 80** hacia backend pool
-3. **Seguridad:**
-    - El NSG asociado debe permitir tráfico entrante en el **puerto 80**
 
 ---
 
