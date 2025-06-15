@@ -66,22 +66,43 @@ python manage.py runserver 0.0.0.0:80
 
 ## Automatizar con servicio systemd
 
-Cree el archivo `/etc/systemd/system/pos-store.service` con el siguiente contenido (ajuste las rutas y el usuario si es necesario):
+### Permisos para ejecutar en el puerto 80
 
-```ini
+Para permitir que manage.py se ejecute por el puerto 80, es necesario permitir que tu usuario tenga acceso a manejar puertos menores a 1024.
+
+Para ello, puedes usar `setcap` para otorgar permisos al ejecutable de Python:
+
+```bash
+sudo setcap 'cap_net_bind_service=+ep' /usr/bin/python3.10
+```
+
+### Crear el servicio systemd
+
+Cree el archivo `/etc/systemd/system/pos-store.service` con el siguiente comando: **(ASEGURATE DE QUE EL USUARIO Y LAS RUTAS COINCIDAN CON TU CONFIGURACIÓN)**
+
+> Si no sabes que usuario usar, puedes verificarlo con el comando `whoami`. Para saber la ruta de tu Proyecto, puedes usar `pwd` dentro del directorio del proyecto.
+
+```bash
+APP_USER="ubuntu" # Cambia esto al usuario que ejecutará la aplicación
+APP_DIR="/home/$APP_USER/pos-store" # Cambia esto, si usaste una ruta diferente al clonar el repositorio
+
+sudo bash -c "cat > /etc/systemd/system/pos-store.service <<EOF
 [Unit]
 Description=pos-store Django App
 After=network.target
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu/pos-store
-Environment="PATH=/home/ubuntu/pos-store/env/bin"
-ExecStart=/home/ubuntu/pos-store/env/bin/python /home/ubuntu/pos-store/manage.py runserver 0.0.0.0:80
+User=$APP_USER
+WorkingDirectory=$APP_DIR
+Environment=PATH=$APP_DIR/env/bin
+ExecStart=$APP_DIR/env/bin/python $APP_DIR/manage.py runserver 0.0.0.0:80
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
+EOF"
+
+
 ```
 
 ## Habilitar y levantar el servicio
