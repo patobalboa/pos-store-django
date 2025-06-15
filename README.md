@@ -3,6 +3,13 @@
 Bienvenido al repositorio **pos-store**, un proyecto educativo diseñado para explorar y comparar distintos métodos de despliegue de una aplicación Django. Este repositorio es ideal para estudiantes de Cloud Computing o DevOps que buscan comprender desde la instalación manual hasta la infraestructura escalable en la nube.
 
 ---
+## 🚀 Recomendación de Inicio
+
+Puedes escoger entre dos enfoques para comenzar:
+- **Manual en Ubuntu 22.04**: Ideal para entender la base del despliegue y la configuración de un servidor.
+- **Docker**: Perfecto si prefieres trabajar con contenerización y despliegue en la nube.
+
+Luego de completar el despliegue, puedes explorar las arquitecturas en AWS y Azure para ver cómo escalar y gestionar la aplicación en la nube.
 
 ## 📚 Índice de Módulos
 
@@ -23,12 +30,6 @@ Bienvenido al repositorio **pos-store**, un proyecto educativo diseñado para ex
 - Conceptos básicos de redes y sistemas operativos
 - Familiaridad con línea de comandos
 
-
----
-
-## 💡 Recomendaciones de Uso
-
-- **Progresión sugerida:** inicia por `01-configuración-server/` para entender la base, luego explora Docker y finalmente los despliegues en la nube.
 
 ---
 
