@@ -13,20 +13,13 @@ Este tutorial describe cómo desplegar la aplicación Django **pos-store** en Az
 
 ## 🖥 Crear imagen personalizada en Azure
 
-1. **Detener la aplicación en la VM base:**
-    ```bash
-    sudo systemctl stop pos-store
-    ```
-2. **Generalizar la VM (si es necesario):**
-    ```bash
-    sudo waagent -deprovision+user -force
-    ```
-3. **Capturar imagen:**
+1. **Capturar imagen:**
     - Ir a **Azure Portal > Máquinas virtuales > [tu VM] > Capturar > Crear imagen**
     - Nombre de imagen: `img-pos-store`
     - Grupo de recursos: `rg-pos-store`
     - Compartir una imagen: **No**
-4. **Esperar a que la imagen se cree** (puede tardar unos minutos)
+    
+2. **Esperar a que la imagen se cree** (puede tardar unos minutos)
 ---
 
 ## 🧱 Crear Virtual Machine Scale Set (VMSS) y Load Balancer

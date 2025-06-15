@@ -58,13 +58,9 @@ python manage.py shell --command='from core.init import *'
 python manage.py shell --command='from core.utils import *'
 ```
 
-## Ejecutar la aplicación manualmente
-
-```bash
-python manage.py runserver 0.0.0.0:80
-```
-
 ## Automatizar con servicio systemd
+
+> **Nota:** Asegúrate de que tu aplicación esté modificada para ejecutarse con su propia configuración de base de datos y otros ajustes necesarios. Este ejemplo asume que la aplicación está configurada para ejecutarse.
 
 ### Permisos para ejecutar en el puerto 80
 
@@ -108,7 +104,6 @@ EOF"
 ## Habilitar y levantar el servicio
 
 ```bash
-sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable pos-store.service
 sudo systemctl start pos-store.service

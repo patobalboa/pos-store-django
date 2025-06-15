@@ -14,34 +14,31 @@ Este tutorial guía paso a paso para desplegar una infraestructura de alta dispo
 
 ## 🖥 Crear AMI personalizada
 
-1. **Actualizar y verificar la app:**
-    ```bash
-    sudo apt update && sudo apt upgrade -y
-    sudo systemctl status pos-store.service
-    ```
-2. **Detener la app antes de crear la imagen:**
-    ```bash
-    sudo systemctl stop pos-store
-    ```
-3. **Crear la imagen:**
+1. **Crear la imagen:**
     - Ir a **Consola EC2 > Instancias**.
     - Seleccionar la instancia y elegir **Acciones > Imagen y plantillas > Crear imagen**.
     - Nombre sugerido: `pos-store-ubuntu22-configured`.
-    - Esperar a que la AMI esté disponible.
+    - Crear la imagen.
+    - Esperar a que la AMI esté disponible (esto puede tardar unos minutos).
+
+> Nota: Puedes ver el progreso en **Consola EC2 > Imágenes > AMIs**.
 
 ---
 
 ## 📄 Crear Plantilla de Lanzamiento (Launch Template)
 
-1. Ir a **EC2 > Plantillas de lanzamiento > Crear plantilla de lanzamiento**.
+1. Ir a **EC2 > Instancias > Plantillas de lanzamiento > Crear plantilla de lanzamiento**.
 2. Configurar:
     - **Nombre:** `lt-pos-store`
-    - **AMI:** Seleccionar la AMI creada.
-    - **Tipo de instancia:** `t3.micro` (o superior).
-    - **Red y subredes:** Seleccionar VPC y subredes (idealmente en distintas zonas de disponibilidad).
-    - **Par de claves SSH:** Asociar si se requiere acceso SSH.
-    - **Grupo de seguridad:** Permitir tráfico entrante en puerto **80** (HTTP).
-3. Guardar la plantilla.
+    - **Orientación sobre Auto Scaling:** Sí
+    - **AMI:** Seleccionar la AMI creada. (en Mis AMI)
+    - **Tipo de instancia:** `t2.small`.
+    - **Clave SSH:** Seleccionar la clave SSH que usarás para acceder a las instancias.
+    - **Configuración de red:**
+        - **Subred:** No incluir subred (para que el ASG elija automáticamente).
+        - **Grupo de seguridad:** Crear uno nuevo o seleccionar uno existente que permita tráfico HTTP (puerto 80).
+
+3. Crear la plantilla de lanzamiento.
 
 ---
 
@@ -51,34 +48,26 @@ Este tutorial guía paso a paso para desplegar una infraestructura de alta dispo
 2. Configurar:
     - **Nombre:** `asg-pos-store`
     - **Plantilla de lanzamiento:** `lt-pos-store`
-    - **Zonas de disponibilidad:** Seleccionar al menos 2.
-    - **Tamaño del grupo:**
-      - Mínimo: 2
-      - Deseado: 2
-      - Máximo: 4
-3. **Política de escalado:**
-    - Añadir política basada en CPU:
-      - Si CPU > 70%: aumentar instancias.
-      - Si CPU < 30%: reducir instancias.
-4. Revisar y crear el ASG.
-
----
-
-## 🌐 Crear y configurar Load Balancer (ALB)
-
-1. Ir a **EC2 > Load Balancers > Crear Load Balancer**.
-2. Seleccionar **Application Load Balancer**.
-3. Configurar:
-    - **Nombre:** `alb-pos-store`
-    - **Esquema:** Público
-    - **Listeners:** Puerto 80 (HTTP)
-    - **Zonas de disponibilidad:** Seleccionar las mismas que el ASG.
-4. **Configurar grupo de destino:**
-    - Tipo: Instancias
-    - Asociar el ASG `asg-pos-store` como backend.
-    - **Health check:** HTTP `/` (raíz de Django)
-5. **Grupo de seguridad:** Permitir tráfico HTTP (puerto 80).
-6. Revisar y crear el ALB.
+3. **Elegir las opciones de lanzamiento:**
+    - **VPC:** Seleccionar la VPC donde se encuentra la plantilla de lanzamiento.
+    - **Zonas de disponibilidad:** Seleccionar al menos 2 zonas para alta disponibilidad.
+    - **Distribución de zonas de disponibilidad:** Mejor esfuerzo equilibrado.
+4. **Integrar en otros servicios:**
+    - **Balanceador de carga:** Asociar a un nuevo balanceador de carga.
+    - **Tipo de balanceador de carga:** Application Load Balancer (ALB).
+    - **Nombre del balanceador de carga:** `alb-pos-store`.
+    - **Esquema del balanceador de carga:** Internet-facing.
+    - **Zonas de disponibilidad:** Seleccionar las mismas que el ASG (Están seleccionadas automáticamente).
+    - **Agentes de escucha y direccionamiento:**
+        - **Puerto de escucha:** 80 (HTTP).
+        - **Grupo de destino:** Crear uno nuevo con nombre `asg-pos-store`.
+    - **Comprobaciones de estado:**
+        - **Activar las comprobaciones de estado de Elastic Load Balancing:** `check`.
+5. **Configurar escalamiento y tamaño del grupo:**
+    - **Tamaño del grupo:** Mínimo 2, deseado 2, máximo 5.
+    - **Política de escalamiento:** Basada en CPU (por ejemplo, escalar hacia arriba si la CPU > 70% y hacia abajo si < 30%).
+    - **Política de mantenimiento:** Lance antes de terminar.
+6. **Revisar y crear el ASG con Balanceador de Carga.**
 
 ---
 
