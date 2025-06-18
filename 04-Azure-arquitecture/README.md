@@ -58,13 +58,15 @@ Para crear un VMSS que despliegue múltiples instancias de la aplicación Django
             - Nombre: `http`
             - Puerto de entrada: `80`
             - Puerto de backend: `80`
+            - Affinity de sesión: Por IP **NUEVO - VER TAMBIEN LA NOTA**
         - Regla NAT de entrada:
             - Inicio de intervalo de puertos de frontend: `50000`
             - Puerto de backend: `22`
 4. Revisión y creación:
     - Revisar la configuración y hacer clic en **Crear**
 
-
+> **NOTA:** La opción de Affinity de sesión por IP permite que las solicitudes del mismo cliente se dirijan a la misma instancia del VMSS, lo cual es útil para aplicaciones que mantienen estado. Si tu aplicación es completamente stateless, puedes usar la opción de Affinity de sesión por cookie. Es necesario para aplicaciones que requieren persistencia de sesión, como las que usan Django con sesiones almacenadas en la base de datos.
+> Puedes cambiar esta configuración más adelante si es necesario. Pero tambien debes cambiar el archivo `settings.py` de tu proyecto Django para que use la configuración de sesión por IP. Esto se hace configurando `SESSION_ENGINE = 'django.contrib.sessions.backends.db'` y `SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'`.
 ---
 
 ## 🚀 Verificar despliegue
